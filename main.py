@@ -4,6 +4,11 @@ from PyQt5.QtGui import QPixmap, QPainter, QPen
 
 #---------------------------------------------------------
 
+def is_in(event, x1, y1, x2, y2):
+    return x1 <= event.x() <= x2 and y1 <= event.y() <= y2
+
+#---------------------------------------------------------
+
 class Frame(QMainWindow):
     def __init__(self, width=640, height=480, title='Window'):
         super().__init__()
@@ -13,6 +18,12 @@ class Frame(QMainWindow):
         self.graphics_container.setPixmap(self.pixmap)
         self.key_handlers = []
         self.mouse_handlers = []
+
+    def width(self):
+        return self.pixmap.width()
+
+    def height(self):
+        return self.pixmap.height()
 
     def toogleFullScreen(self):
         if self.isFullScreen():
@@ -102,13 +113,17 @@ class Snake:
 
 class MainMenu:
 
-    @staticmethod
-    def buttons_handler(event):
-        pass
-
     def __init__(self, master):
         self.master = master
-        master.addMouseHandler(self.buttons_handler)
+
+        def buttons_handler(event):
+            if is_in(event, self.master.width() / 2 - 40, self.master.height() / 2 - 30,
+                     self.master.width() / 2 + 40, self.master.height() / 2 + 30):
+                self.master.close()
+
+                master.addMouseHandler(buttons_handler)
+        QPainter(master.pixmap).drawRoundedRect(master.width() / 2 - 40, master.height() / 2 - 30,
+                 master.width() / 2 + 40, master.height() / 2 + 30, 10, 10)
 
 #---------------------------------------------------------
 
@@ -116,6 +131,7 @@ class App:
     def __init__(self):
         app = QApplication([])
         screen_size = app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height()
+        # FIXME it something strange in screen size in reality...
         frame = Frame(*screen_size, 'Snake')
         frame.toogleFullScreen()
         MainMenu(frame)
