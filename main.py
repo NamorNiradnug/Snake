@@ -11,19 +11,37 @@ class Frame(QMainWindow):
         self.graphics_container = QLabel()
         self.pixmap = QPixmap(width, height)
         self.graphics_container.setPixmap(self.pixmap)
-        self.keys = []
+        self.key_handlers = []
+        self.mouse_handlers = []
 
-    def addKey(self, key, pos=None):
+    def toogleFullScreen(self):
+        if self.isFullScreen():
+            return self.showNormal()
+        self.showFullScreen()
+
+    def addKeyHandler(self, key, pos=None):
         if pos is None:
-            pos = len(self.keys)
-        self.keys.insert(pos, key)
+            pos = len(self.key_handlers)
+        self.key_handlers.insert(pos, key)
 
-    def popKey(self, pos=-1):
-        self.keys.pop(-1)
+    def popKeyHandler(self, pos=-1):
+        self.key_handlers.pop(-1)
 
     def keyPressEvent(self, event):
-        for key in self.keys:
+        for key in self.key_handlers:
             key(event)
+
+    def addMouseHandler(self, mouse, pos=None):
+        if pos is None:
+            pos = len(self.mouse_handlers)
+        self.mouse_handlers.insert(pos, mouse)
+
+    def popMouseHandler(self, pos=-1):
+        self.mouse_handlers.pop(-1)
+
+    def mousePressEvent(self, event):
+        for mouse in self.mouse_handlers:
+            mouse(event)
 
 #---------------------------------------------------------
 
@@ -82,12 +100,27 @@ class Snake:
 
 #---------------------------------------------------------
 
+class MainMenu:
+
+    @staticmethod
+    def buttons_handler(event):
+        pass
+
+    def __init__(self, master):
+        self.master = master
+        master.addMouseHandler(self.buttons_handler)
+
+#---------------------------------------------------------
+
 class App:
     def __init__(self):
         app = QApplication([])
         screen_size = app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height()
         frame = Frame(*screen_size, 'Snake')
+        frame.toogleFullScreen()
+        MainMenu(frame)
         frame.show()
         app.exec_()
 
+#---------------------------------------------------------
 App()
