@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # Wing files
-*.wpr
-*.wpu
+snake.wpr
+snake.wpu
