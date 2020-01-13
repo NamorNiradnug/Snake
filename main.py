@@ -84,4 +84,10 @@ class Snake:
 
 class App:
     def __init__(self):
-        pass
+        app = QApplication([])
+        screen_size = app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height()
+        frame = Frame(*screen_size, 'Snake')
+        frame.show()
+        app.exec_()
+
+App()
